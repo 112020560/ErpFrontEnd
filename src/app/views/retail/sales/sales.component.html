@@ -13,8 +13,8 @@
                                 <mat-select placeholder="Tipo de Venta:" [(ngModel)]="tipoVentaSelected" required
                                     style="width: 100;" name="servicesbatch" id="servicesbatch"
                                     (selectionChange)="ngChangeSaleType($event.value)">
-                                    <mat-option *ngFor="let item of tipoVentaList" value="{{item.id}}">
-                                        {{item.description}}
+                                    <mat-option *ngFor="let item of tipoVentaList" value="{{item.pkTipoDocumento}}">
+                                        {{item.descripcion}}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
@@ -25,8 +25,8 @@
                                 <mat-select placeholder="Bodega Origen:" [(ngModel)]="bodegaSelected" required
                                     style="width: 100;" name="servicesbatch" id="servicesbatch"
                                     (selectionChange)="ngChangeBodega($event.value)">
-                                    <mat-option *ngFor="let item of bodegaList" value="{{item.id}}">
-                                        {{item.description}}
+                                    <mat-option *ngFor="let item of bodegaList" value="{{item.pkBodega}}">
+                                        {{item.descripcion}}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
@@ -47,8 +47,8 @@
                                 <mat-select placeholder="Cliente:" [(ngModel)]="clienteSelected" required
                                     style="width: 100;" name="servicesbatch" id="servicesbatch"
                                     (selectionChange)="ngChangeClients($event.value)">
-                                    <mat-option *ngFor="let item of clienteList" value="{{item.id}}">
-                                        {{item.description}}
+                                    <mat-option *ngFor="let item of clienteList" value="{{item.pkPersona}}">
+                                        {{item.nombreCompleto}}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>

@@ -4,6 +4,7 @@ import { CatalogService } from '../../../services/catalog.service';
 import { PersonService } from '../../../services/person.service';
 import { SelectItem } from 'primeng/api/selectitem';
 import { ItemService } from '../../../services/item.service';
+import { ProductsService } from '../../../services/products.service';
 
 @Component({
   selector: 'app-sales',
@@ -36,6 +37,7 @@ export class SalesComponent implements OnInit {
   public personInfo: any;
   // Articulos
   public articulosList: SelectItem[] = [];
+  public listproduct: any[] = [];
   public simbolo: string = '₡';
   public displayDiscount: boolean = false;
 
@@ -46,7 +48,8 @@ export class SalesComponent implements OnInit {
 
   constructor(private catalogServices: CatalogService,
     private personServices: PersonService,
-    private itemService: ItemService) {
+    private itemService: ItemService,
+    private productServices: ProductsService) {
     this.precios = 0;
     this.descuentos = 0;
     this.sumas = 0;
@@ -78,10 +81,17 @@ export class SalesComponent implements OnInit {
   }
 
   ngLoadSalesType = async () => {
-    const body = {
-      'P_CATALOGO': 'TIPO_DOCUMENTO_VENTA'
-    };
-    this.catalogServices.saleType(body).subscribe((data) => {
+    // const body = {
+    //   'P_CATALOGO': 'TIPO_DOCUMENTO_VENTA'
+    // };
+    // this.catalogServices.saleType(body).subscribe((data) => {
+    //   if (data) {
+    //     this.tipoVentaList = data;
+    //     this.tipoVentaSelected = '1';
+    //     this.ngChangeSaleType(this.tipoVentaSelected);
+    //   }
+    // });
+    this.catalogServices.tipoDocumento().subscribe((data) => {
       if (data) {
         this.tipoVentaList = data;
         this.tipoVentaSelected = '1';
@@ -91,61 +101,94 @@ export class SalesComponent implements OnInit {
   }
 
   ngLoadWhereHouse = async () => {
-    const body = {
-      'P_CATALOGO': 'BODEGAS',
-      'P_LLAVE_FILTRO': 'COD_CAJERO'
-    };
-    this.catalogServices.saleType(body).subscribe((data) => {
-      if (data) {
-        this.bodegaList = data;
-        this.bodegaSelected = '1';
-      }
+    // const body = {
+    //   'P_CATALOGO': 'BODEGAS',
+    //   'P_LLAVE_FILTRO': 'COD_CAJERO'
+    // };
+    // this.catalogServices.saleType(body).subscribe((data) => {
+    //   if (data) {
+    //     this.bodegaList = data;
+    //     this.bodegaSelected = '1';
+    //   }
+    // });
+    this.catalogServices.bodegas().subscribe((data) => {
+      console.log('Data => ', data);
+      this.bodegaList = data;
+      this.bodegaSelected = '1';
     });
   }
 
   loadItemsSelect = () => {
-    const body = {
-      'P_CATALOGO': 'ARTICULOS',
-      'P_LLAVE_FILTRO': this.bodegaSelected
-    };
-    this.catalogServices.saleType(body).subscribe((data) => {
+    // const body = {
+    //   'P_CATALOGO': 'ARTICULOS',
+    //   'P_LLAVE_FILTRO': this.bodegaSelected
+    // };
+    // this.catalogServices.saleType(body).subscribe((data) => {
+    //   if (data) {
+    //     // this.articulosList = data;
+    //     data.forEach(element => {
+    //       this.articulosList.push({ label: element.description, value: element.id });
+    //     });
+    //     console.log('articulosList', this.articulosList);
+    //   }
+    // });
+    this.productServices.getForSale().subscribe((data) => {
       if (data) {
-        // this.articulosList = data;
-        data.forEach(element => {
-          this.articulosList.push({ label: element.description, value: element.id });
+        this.articulosList = [];
+        this.listproduct = data;
+        this.listproduct.forEach(element => {
+          this.articulosList.push({ label: element.codigo, value: element.pkProducto });
         });
-        console.log('articulosList', this.articulosList);
       }
     });
+
   }
 
   ngArticulosChange = (value) => {
-    this.itemService.find(value).subscribe(
-      (res) => {
-        console.log(res);
-        this.car.codigo = res.codigo;
-        this.car.descripcion = res.descripcion;
+    // tslint:disable-next-line:triple-equals
+    const product = this.listproduct.filter(x => x.pkProducto == value)[0];
+    console.log('producto filtrado => ', product);
+    if (product) {
+      this.car.codigo = product.codigo;
+      this.car.descripcion = product.descripcion;
+      if (product.productoCantidads.length > 0) {
+        const cantSelected = product.productoCantidads.filter(cant => cant.fkBodega == this.bodegaSelected)[0];
+        console.log('cantSelected => ', cantSelected);
         this.car.cantidad = 1;
-        document.getElementById('cantidad').focus();
-        this.car.precio = res.precio_venta;
+      }
+
+      if (product.listaPreciosProductos.length > 0) {
+        // esto hay que filtrarlo mejor
+        const listaPreciosSelected = product.listaPreciosProductos[0];
+        console.log('listaPreciosSelected => ', listaPreciosSelected);
+        this.car.precio = listaPreciosSelected.precioVenta;
         this.car.descuento = 0.0;
         this.car.sumas = ((this.car.precio * this.car.cantidad) - this.car.descuento);
-        this.car.ivaneto = res.iva;
-        this.car.iva = this.car.sumas * res.iva;
-      });
+        this.car.ivaneto = listaPreciosSelected.imp01;
+        this.car.iva = this.car.sumas * listaPreciosSelected.imp01;
+      }
+    }
+    // this.itemService.find(value).subscribe(
+    //   (res) => {
+    //     console.log(res);
+    //     this.car.codigo = res.codigo;
+    //     this.car.descripcion = res.descripcion;
+    //     this.car.cantidad = 1;
+    //     document.getElementById('cantidad').focus();
+    //     this.car.precio = res.precio_venta;
+    //     this.car.descuento = 0.0;
+    //     this.car.sumas = ((this.car.precio * this.car.cantidad) - this.car.descuento);
+    //     this.car.ivaneto = res.iva;
+    //     this.car.iva = this.car.sumas * res.iva;
+    //   });
   }
 
   ngChangeSaleType = (value) => {
-    console.log('entre', value);
-    const body = {
-      'P_CATALOGO': 'CLIENTES',
-      'P_LLAVE_FILTRO': value
-    };
-    this.catalogServices.saleType(body).subscribe((data) => {
+    console.log('Tipo Documento => ', value);
+
+    this.personServices.getAllToSale(1).subscribe((data) => {
       if (data) {
         this.clienteList = data;
-        // this.bodegaSelected = 1;
-        console.log('clienteList', this.clienteList);
       }
     });
   }
@@ -153,12 +196,29 @@ export class SalesComponent implements OnInit {
   ngChangeBodega = (value) => { };
 
   ngChangeClients = (value) => {
-    this.personServices.get(value).subscribe((data) => {
-      this.personInfo = data;
-      console.log(this.personInfo);
-      this.telefonoSelected = this.personInfo.telefono;
-      this.correoSelected = this.personInfo.correo;
-    });
+
+    console.log('Valor cliente => ', value);
+    console.log('Todos los clientes => ', this.clienteList);
+    // this.personServices.get(value).subscribe((data) => {
+    //   this.personInfo = data;
+    //   console.log(this.personInfo);
+    //   this.telefonoSelected = this.personInfo.telefono;
+    //   this.correoSelected = this.personInfo.correo;
+    // });
+    // tslint:disable-next-line:triple-equals
+    const clientSelected = this.clienteList.filter(x => x.pkPersona == value)[0];
+    console.log('Cliente seleccionado => ', clientSelected);
+    if (clientSelected.personaMedioContactos.length > 0) {
+      // tslint:disable-next-line:triple-equals
+      this.telefonoSelected = clientSelected.personaMedioContactos.filter(x => x.fkMedioContacto == 1 && x.orden == 0)[0].valor;
+      console.log('Telefono => ', this.telefonoSelected);
+      // tslint:disable-next-line:triple-equals
+      this.correoSelected = clientSelected.personaMedioContactos.filter(x => x.fkMedioContacto == 2 && x.orden == 0)[0].valor;
+      console.log('Telefono => ', this.telefonoSelected);
+    } else {
+      this.telefonoSelected = '';
+      this.correoSelected = '';
+    }
   }
 
   showDialogToAdd() {
@@ -173,7 +233,7 @@ export class SalesComponent implements OnInit {
     // ==> operaciones de la nueva linea
     this.car.sumas = ((this.car.precio * this.car.cantidad) - this.car.descuento);
     this.car.iva = this.car.sumas * this.car.ivaneto;
-    this.car.total = (this.car.sumas +  this.car.iva);
+    this.car.total = (this.car.sumas + this.car.iva);
     this.car.descuento = this.car.descuento * 1;
     // ==>
     if (this.newCar) {

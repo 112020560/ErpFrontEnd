@@ -48,6 +48,7 @@ import { AppRoutingModule } from './app.routing';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { ChartsModule } from 'ng2-charts';
+import { ProductsService } from './services/products.service';
 
 export function tokenGetter() {
   return localStorage.getItem('token');
@@ -85,7 +86,7 @@ export function tokenGetter() {
   providers: [{
     provide: LocationStrategy,
     useClass: HashLocationStrategy
-  }, AuthService, JwtHelperService, CatalogService, PersonService, ItemService],
+  }, AuthService, JwtHelperService, CatalogService, PersonService, ItemService, ProductsService],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

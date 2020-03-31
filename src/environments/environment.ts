@@ -14,6 +14,7 @@ const options = { headers: headers };
 export const environment = {
   tokenUrl: '',
   backendUrl: 'https://localhost:44345/api',
+  baseUrl: 'http://localhost:3000/api',
   header: options,
   production: false
 };
