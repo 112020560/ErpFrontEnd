@@ -1,0 +1,152 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col">
+      <div class="card">
+        <div class="card-header">
+          <div class="row"></div>
+          <i class="icon-list"></i>
+          <strong>Facturas</strong>
+          <div class="row">
+            <div class="col">
+
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <div class="table-responsive">
+                <p-table #dt [columns]="cols" [value]="invoices" [(selection)]="invoiceSelected" [paginator]="true" [rows]="5" [resizableColumns]="true">
+                  <ng-template pTemplate="caption">
+                     <div style="text-align: right">
+                        <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                        <input type="text" pInputText size="50" placeholder="Global Filter" (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                    </div>
+                  </ng-template>
+                  <ng-template pTemplate="header" let-columns>
+                    <tr>
+                      <th style="width: 3em" >
+                        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                      </th>
+                      <th *ngFor="let col of columns" pResizableColumn>
+                        {{col.header}}
+                      </th>
+                      <th pResizableColumn >
+                        Acciones
+                      </th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-rowData let-columns="columns">
+                    <tr [pSelectableRow]="rowData">
+                      <td>
+                        <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+                      </td>
+                      <!-- <td *ngFor="let col of columns" class="ui-resizable-column">
+                        {{rowData[col.field]}}
+                      </td> -->
+                      <td class="ui-resizable-column">
+                        {{rowData['numerodocumento']}}
+                      </td>
+                      <td class="ui-resizable-column">
+                        {{rowData['fecha_inserta'] | date: 'dd-MM-yyyy'}}
+                      </td>
+                      <td class="ui-resizable-column">
+                        {{rowData['tienda']}}
+                      </td>
+                      <td class="ui-resizable-column">
+                        {{rowData['tipodocumento']}}
+                      </td>
+                      <td class="ui-resizable-column">
+                        {{rowData['estado']}}
+                      </td>
+                      <td class="ui-resizable-column">
+                        {{rowData['cliente']}}
+                      </td>
+                      <td class="ui-resizable-column">
+                        {{rowData['monto'] | currency:"₡":"symbol"}}
+                      </td>
+                      <td class="ui-resizable-column">
+                        {{rowData['descuento'] | currency:"₡":"symbol"}}
+                      </td>
+                      <td class="ui-resizable-column">
+                        {{rowData['sumas'] | currency:"₡":"symbol"}}
+                      </td>
+                      <td class="ui-resizable-column">
+                        {{rowData['IMP00'] | currency:"₡":"symbol"}}
+                      </td>
+                      <td class="ui-resizable-column">
+                        {{rowData['IMP01'] | currency:"₡":"symbol"}}
+                      </td>
+                      <td class="ui-resizable-column">
+                        {{rowData['total'] | currency:"₡":"symbol"}}
+                      </td>
+
+                      <td>
+                        <!-- <button pButton type="button" icon="pi pi-undo" class="ui-button-info" (click)="onRowEditInit(rowData)" title="Reversar factuta" ></button> -->
+                        <button pButton type="button" icon="fa fa-binoculars" class="ui-button-info" (click)="openModal(template, rowData['numerodocumento'])" title="Ver Detalle" ></button>
+                        <button pButton type="button" icon="fa fa-undo" class="ui-button-danger" (click)="openModal(template, rowData['numerodocumento'])" title="Reversar factuta" ></button>
+                        <!-- <button *ngIf="editing" pButton type="button" pSaveEditableRow icon="pi pi-check" class="ui-button-success" style="margin-right: .5em" (click)="onRowEditSave(rowData)"></button>
+                        <button *ngIf="editing" pButton type="button" pCancelEditableRow icon="pi pi-times" class="ui-button-danger" (click)="onRowEditCancel(rowData, ri)"></button> -->
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <!-- <ng-template pTemplate="summary">
+                    <ul>
+                      <li *ngFor="let car of invoiceSelected" style="text-align: left">
+                        {{car.vin + ' - ' + car.brand + ' - ' + car.year + ' - ' + car.color}}
+                      </li>
+                    </ul>
+                  </ng-template> -->
+                </p-table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #template>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Detalle de Factura</h4>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col">
+          <p-table [value]="items">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Codigo</th>
+                    <th>Descripcion</th>
+                    <th>Precio U.</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Descuento</th>
+                    <th>SubTotal</th>
+                    <th>I.V.A.</th>
+                    <th>Total</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-car>
+                <tr>
+                    <td>{{car.codigo}}</td>
+                    <td>{{car.descripcion}}</td>
+                    <td>{{car.precioU | currency:"₡":"symbol"}}</td>
+                    <td>{{car.cantidad | currency:"₡":"symbol"}}</td>
+                    <td>{{car.precio | currency:"₡":"symbol"}}</td>
+                    <td>{{car.descuento | currency:"₡":"symbol"}}</td>
+                    <td>{{car.sumas | currency:"₡":"symbol"}}</td>
+                    <td>{{car.iva | currency:"₡":"symbol"}}</td>
+                    <td>{{car.total | currency:"₡":"symbol"}}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+</div>

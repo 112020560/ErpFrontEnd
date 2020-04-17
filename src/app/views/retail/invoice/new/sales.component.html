@@ -1,0 +1,627 @@
+<p-toast [style]="{marginTop: '80px'}" [hideTransitionOptions]="'1000ms'" ></p-toast>
+<div class="animated fadeIn">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <i class="icon-plus"></i>
+                    <strong>Nueva Factura</strong>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <mat-form-field>
+                                <mat-select placeholder="Tipo de Venta:" [(ngModel)]="tipoVentaSelected" required
+                                    style="width: 100;" name="servicesbatch" id="servicesbatch"
+                                    (selectionChange)="ngChangeSaleType($event.value)">
+                                    <mat-option *ngFor="let item of tipoVentaList" value="{{item.pkTipoDocumento}}">
+                                        {{item.descripcion}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col">
+                            <mat-form-field>
+                                <mat-select placeholder="Bodega Origen:" [(ngModel)]="bodegaSelected" required
+                                    style="width: 100;" name="servicesbatch" id="servicesbatch"
+                                    (selectionChange)="ngChangeBodega($event.value)">
+                                    <mat-option *ngFor="let item of bodegaList" value="{{item.pkBodega}}">
+                                        {{item.descripcion}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col">
+                            <mat-form-field>
+                                <input matInput [matDatepicker]="pickerI" [formControl]="dateI" tabindex="3" id="fechaI"
+                                    readonly placeholder="Fecha Venta">
+                                <mat-datepicker-toggle matSuffix [for]="pickerI"></mat-datepicker-toggle>
+                                <mat-datepicker #pickerI></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <mat-form-field>
+                                <mat-select placeholder="Cliente:" [(ngModel)]="clienteSelected" required
+                                    style="width: 100;" name="servicesbatch" id="servicesbatch"
+                                    (selectionChange)="ngChangeClients($event.value)">
+                                    <mat-option *ngFor="let item of clienteList" value="{{item.pkPersona}}">
+                                        {{item.nombreCompleto}}
+                                    </mat-option>
+                                </mat-select>
+
+                                <!-- <input type="text" placeholder="Assignee" aria-label="Assignee" matInput [formControl]="myControl" [matAutocomplete]="auto">
+                                <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" >
+                                    <mat-option *ngFor="let item of filteredOptions" value="{{item.id}}">
+                                        {{item.description}}
+                                    </mat-option>
+                                </mat-autocomplete> -->
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col">
+                            <mat-form-field class="example-full-width">
+                                <input matInput placeholder="Telefono :" required name="prioridad" readonly
+                                    [(ngModel)]="telefonoSelected">
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col">
+                            <mat-form-field class="example-full-width">
+                                <input matInput placeholder="Correo :" required name="prioridad" readonly
+                                    [(ngModel)]="correoSelected">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div style="text-align:left">
+                                <button type="button" pButton icon="fa fa-plus" [disabled]="bodegaSelected === '0'"
+                                    id="btnadditem" (click)="showDialogToAdd(template)" label="Nuevo"></button>
+                            </div>
+                        </div>
+                        <div class="col">
+
+                        </div>
+                        <div class="col">
+
+                        </div>
+                        <div class="col">
+
+                        </div>
+                        <div class="col">
+                            <div style="text-align:right">
+                                <button type="button" pButton icon="fa fa-save" class="ui-button-success"
+                                    [disabled]="items.length === 0" (click)="showMethodOfPayment(formaspago)"
+                                    label="Pagar"></button>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div style="text-align:left">
+                                <button type="button" pButton icon="fa fa-eraser" class="ui-button-warning"
+                                     (click)="showTicket()"
+                                    label="Limpiar"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row  mt-2">
+                        <div class="col">
+                            <div class="table-responsive">
+                                <p-table [columns]="cols" [value]="items" selectionMode="single"
+                                    [(selection)]="selectedCar" (onRowSelect)="onRowSelect($event)" [paginator]="true"
+                                    [rows]="10" [responsive]="true">
+                                    <ng-template pTemplate="caption">
+                                        Articulos de la ventas
+                                    </ng-template>
+                                    <ng-template pTemplate="header" let-columns>
+                                        <tr>
+                                            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                                                {{col.header}}
+                                                <p-sortIcon [field]="col.field"></p-sortIcon>
+                                            </th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-rowData let-columns="columns">
+                                        <!-- <tr [pSelectableRow]="rowData">
+                                            <td *ngFor="let col of columns">
+                                                {{rowData[col.field]}}
+                                            </td>
+                                        </tr> -->
+                                        <tr [pSelectableRow]="rowData">
+                                            <td>
+                                                {{rowData['codigo']}}
+                                            </td>
+                                            <td>
+                                                {{rowData['descripcion']}}
+                                            </td>
+                                            <td>
+                                                {{rowData['cantidad']}}
+                                            </td>
+                                            <td>
+                                                {{rowData['precio']  | number}}
+                                            </td>
+                                            <td>
+                                                {{rowData['descuento']  | number}}
+                                            </td>
+                                            <td>
+                                                {{rowData['sumas']  | number}}
+                                            </td>
+                                            <td>
+                                                {{rowData['iva'] | number}}
+                                            </td>
+                                            <td>
+                                                {{rowData['total'] | number}}
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="footer">
+                                        <tr>
+                                            <td colspan="4">Totales</td>
+                                            <!-- <td>{{simbolo}}{{precios | number}}</td> -->
+                                            <td>{{simbolo}}{{descuentos | number}}</td>
+                                            <td>{{simbolo}}{{sumas | number}}</td>
+                                            <td>{{simbolo}}{{iva | number}}</td>
+                                            <td>{{simbolo}}{{total | number}}</td>
+                                        </tr>
+                                    </ng-template>
+                                    <!-- <ng-template pTemplate="summary" let-rowData>
+                                        <div class="col">
+                                            <div style="text-align:left">
+                                                <button type="button" pButton icon="fa fa-plus"
+                                                    (click)="showDialogToAdd()" label="Nuevo"></button>
+                                            </div>
+                                        </div>
+                                    </ng-template> -->
+                                </p-table>
+                            </div>
+
+
+                            <p-dialog header="Detalle del articulo" [(visible)]="displayDialog" [focusOnShow]="false"
+                                [responsive]="true" showEffect="fade" [modal]="true" [style]="{width: '500px'}">
+                                <div class="ui-g ui-fluid" *ngIf="car">
+                                    <div class="ui-g-12">
+                                        <div class="ui-g-4">
+                                            <a href="javascript:void(0)" (click)="showAdvancedSearch(template)">
+                                                <label for="codigo">Codigo</label>
+                                            </a>
+                                        </div>
+                                        <div class="ui-g-8">
+                                            <p-dropdown [options]="articulosList" [(ngModel)]="car.id" filter="true"
+                                                [inputId]="'cboitems'" (onChange)="ngArticulosChange($event.value)">
+                                                <ng-template let-car pTemplate="item">
+                                                    <div class="ui-helper-clearfix"
+                                                        style="position: relative;height: 25px;">
+                                                        <div>{{car.label}}</div>
+                                                    </div>
+                                                </ng-template>
+                                            </p-dropdown>
+                                        </div>
+                                    </div>
+                                    <div class="ui-g-12">
+                                        <div class="ui-g-4">
+                                            <label for="desc">Descripcion</label>
+                                        </div>
+                                        <div class="ui-g-8">
+                                            <input pInputText id="desc" [(ngModel)]="car.descripcion" />
+                                        </div>
+                                    </div>
+                                    <div class="ui-g-12">
+                                        <div class="ui-g-4">
+                                            <label for="cantidad">Cantidad</label>
+                                        </div>
+                                        <div class="ui-g-8">
+                                            <input pInputText type="number" id="cantidad" [(ngModel)]="car.cantidad"
+                                                id="cantidad" (keypress)="onKeyPress($event)" />
+                                        </div>
+                                    </div>
+                                    <div class="ui-g-12">
+                                        <div class="ui-g-4">
+                                            <label for="precio">Precio</label>
+                                        </div>
+                                        <div class="ui-g-8">
+                                            <input pInputText id="precio" [(ngModel)]="car.precio" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="ui-g-12">
+                                        <div class="ui-g-4">
+                                            <a href="javascript:void(0)" (click)="openDiscountDialog()">
+                                                <label for="descuento">Descuento</label>
+                                            </a>
+                                        </div>
+                                        <div class="ui-g-8">
+                                            <input pInputText id="descuento" [(ngModel)]="car.descuento" />
+                                        </div>
+                                    </div>
+                                    <div class="ui-g-12">
+                                        <div class="ui-g-4">
+                                            <label for="iva">IVA</label>
+                                        </div>
+                                        <div class="ui-g-8">
+                                            <input pInputText id="iva" [(ngModel)]="car.iva" readonly />
+                                        </div>
+                                    </div>
+                                </div>
+                                <p-footer>
+                                    <div class="ui-dialog-buttonpane ui-helper-clearfix">
+                                        <button type="button" pButton icon="fa fa-close" (click)="delete()"
+                                            class="ui-button-danger" label="Borrar"></button>
+                                        <button type="button" pButton icon="fa fa-check" (click)="save()"
+                                            label="Guardar"></button>
+                                    </div>
+                                </p-footer>
+                            </p-dialog>
+
+                            <ng-template #template>
+                                <div class="modal-header">
+                                    <h4 class="modal-title pull-left">Busqueda Avanzada</h4>
+                                    <button type="button" class="close pull-right" aria-label="Close"
+                                        (click)="modalRef.hide()">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col">
+                                            <mat-form-field>
+                                                <mat-select placeholder="Linea:" [(ngModel)]="lineaSelected" required
+                                                    style="width: 100;" name="cboLinea" id="cboLinea">
+                                                    <mat-option *ngFor="let item of lineas" value="{{item.id}}">
+                                                        {{item.description}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div class="col">
+                                            <mat-form-field>
+                                                <mat-select placeholder="Modelo:" [(ngModel)]="modeloSelected" required
+                                                    style="width: 100;" name="cbomodelo" id="cbomodelo">
+                                                    <mat-option *ngFor="let item of modelos" value="{{item.id}}">
+                                                        {{item.description}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div class="col">
+                                            <mat-form-field>
+                                                <mat-select placeholder="Marca:" [(ngModel)]="marcaSelected" required
+                                                    style="width: 100;" name="cbomarca" id="cbomarca">
+                                                    <mat-option *ngFor="let item of marcas" value="{{item.id}}">
+                                                        {{item.description}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <mat-form-field class="example-full-width">
+                                                <input matInput placeholder="Codigo:" name="codigo" id="codigo"
+                                                    [(ngModel)]="codigo">
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col">
+                                            <mat-form-field class="example-full-width">
+                                                <input matInput placeholder="Descripcion:" name="descripcion"
+                                                    id="descripcion" [(ngModel)]="descripcion">
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col">
+                                            <mat-form-field class="example-full-width">
+                                                <input matInput placeholder="Desc Proveedor:" name="descripcionprov"
+                                                    id="descripcionprov" [(ngModel)]="descripcionProveedor">
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div style="text-align:right">
+                                                <button type="button" pButton icon="fa fa-search"
+                                                    [disabled]="bodegaSelected === '0'" id="btnadditem"
+                                                    (click)="advanzedfind()" label="Buscar"></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="table-responsive">
+                                                <p-table #dt [columns]="advcols" [value]="advanced" [paginator]="true"
+                                                    [rows]="10" selectionMode="single" [(selection)]="advancedSelected"
+                                                    (onRowSelect)="onRowSelectadv($event)">
+                                                    <ng-template pTemplate="caption">
+                                                        <div style="text-align: right">
+                                                            <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                                                            <input type="text" pInputText size="50"
+                                                                placeholder="Global Filter"
+                                                                (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                                                style="width:auto">
+                                                        </div>
+                                                    </ng-template>
+                                                    <ng-template pTemplate="header" let-columns>
+                                                        <tr>
+                                                            <th *ngFor="let col of columns">
+                                                                {{col.header}}
+                                                            </th>
+                                                        </tr>
+                                                    </ng-template>
+                                                    <ng-template pTemplate="body" let-rowData let-columns="columns">
+                                                        <tr [pSelectableRow]="rowData">
+                                                            <td *ngFor="let col of columns">
+                                                                {{rowData[col.field]}}
+                                                            </td>
+                                                        </tr>
+                                                    </ng-template>
+                                                </p-table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-template>
+
+                            <ng-template #formaspago class="modal-lg" >
+                                <div class="modal-header">
+                                    <h4 class="modal-title pull-left">Formas de Pago</h4>
+                                    <button type="button" class="close pull-right" aria-label="Close"
+                                        (click)="modalRef.hide()">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="col">
+                                                <mat-form-field class="example-full-width">
+                                                    <input type="number"  matInput placeholder="Monto Factura :" required name="prioridad" readonly
+                                                        [(ngModel)]="total">
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="col">
+                                                <mat-form-field class="example-full-width">
+                                                    <input type="number"  matInput placeholder="Monto Faltante :" required name="prioridad" readonly
+                                                        [(ngModel)]="total">
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <mat-form-field>
+                                                <mat-select placeholder="Forma de Pago:" [(ngModel)]="methodOfPaymenSelected" required
+                                                    style="width: 100;" name="cbometodopago" (selectionChange)="methodOfPaymentChange($event.value)" >
+                                                    <mat-option *ngFor="let item of methodOfPaymentList" value="{{item.pkMetodoPago}}">
+                                                        {{item.metodoPago}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <mat-form-field class="example-full-width">
+                                                <input type="number"  matInput placeholder="Monto :" required name="prioridad"
+                                                    [(ngModel)]="amountPay" id="monto_pagar" >
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                    <div class="row" *ngIf="showcardInfo" >
+                                        <div class="col">
+                                            <mat-form-field>
+                                                <mat-select placeholder="Marca:" [(ngModel)]="cardMarcSelect" required
+                                                    style="width: 100;" name="cbomodelo" id="cbomodelo">
+                                                    <mat-option *ngFor="let item of cardMarkList" value="{{item.id}}">
+                                                        {{item.description}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col">
+                                            <mat-form-field>
+                                                <mat-select placeholder="Banco:" [(ngModel)]="cardBankselect" required
+                                                    style="width: 100;" name="cbomodelo" id="cbomodelo">
+                                                    <mat-option *ngFor="let item of cardBankList" value="{{item.id}}">
+                                                        {{item.description}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col">
+                                            <mat-form-field class="example-full-width">
+                                                <input type="number"  matInput placeholder="# Autorizacion:" required name="prioridad"
+                                                    [(ngModel)]="amountPay" >
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" pButton icon="fa fa-save" class="ui-button-info"
+                                     (click)="guardarFactura()"
+                                    label="Guardar"></button>
+                                </div>
+                            </ng-template>
+
+                            <!-- <p-dialog header="Detalle del articulo" [(visible)]="displayDialog" [focusOnShow]="false"
+                                [responsive]="true" showEffect="fade" [modal]="true" [style]="{width: '500px'}">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <strong>Solicitudes Masivas</strong>
+                                            </div>
+                                            <div class="card-body">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </p-dialog> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p-dialog header="Detalle del articulo" [(visible)]="displayDiscount" [focusOnShow]="false" [responsive]="true"
+        showEffect="fade" [modal]="true" [style]="{width: '500px'}">
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="codigo">Codigo</label>
+                </div>
+                <div class="ui-g-8">
+                    <!-- <input pInputText id="codigo" [(ngModel)]="car.codigo" autofocus /> -->
+                    <p-dropdown [options]="tipoDescuento" [(ngModel)]="tipoDescuentoSelected">
+                        <ng-template let-car pTemplate="item">
+                            <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+                                <div>{{car.label}}</div>
+                            </div>
+                        </ng-template>
+                    </p-dropdown>
+                </div>
+            </div>
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="valor">Valor</label>
+                </div>
+                <div class="ui-g-8">
+                    <input pInputText type="number" id="valor" [(ngModel)]="montoDescuento" [value]="0" />
+                </div>
+            </div>
+        </div>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-helper-clearfix">
+                <button type="button" pButton icon="fa fa-check" (click)="aplicarDescuento()" label="Aplicar"></button>
+            </div>
+        </p-footer>
+    </p-dialog>
+
+    <p-dialog header="Ticket Venta" [(visible)]="displayTicket" [focusOnShow]="false" [responsive]="true"
+        showEffect="fade" [modal]="true" [style]="{width: '1100px'}" (onHide)= "clear()" >
+        <div class="container" id="html" >
+            <div class="row">
+                <div class="col-12">
+                    <div class="invoice-title">
+                        <h2>Factura</h2><h3 class="pull-right"># {{numFactura}}</h3>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-6">
+                            <address>
+                            <strong>Facturado a:</strong><br>
+                                {{cliente}}<br>
+                                {{direccion}}<br>
+                                {{detalledireccion}}<br>
+                            </address>
+                        </div>
+                        <div class="col-6 text-right">
+                            <address>
+                            <strong>Enviado a:</strong><br>
+                                {{enviado}}<br>
+                            </address>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <address>
+                                <strong>Método de pago:</strong><br>
+                                Visa ending **** 4242<br>
+                                jsmith@email.com
+                            </address>
+                        </div>
+                        <div class="col-6 text-right">
+                            <address>
+                                <strong>Fecha de Factura:</strong><br>
+                                {{fechaTicket | date:'dd-MM-yyyy, h:mm a'}}<br><br>
+                            </address>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" >
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><strong>Resumen dela venta</strong></h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <td><strong>Articulo</strong></td>
+                                            <td class="text-center"><strong>Precio</strong></td>
+                                            <td class="text-center"><strong>Cantidad</strong></td>
+                                            <td class="text-right"><strong>Total</strong></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- foreach ($order->lineItems as $line) or some such thing here -->
+                                        <tr *ngFor="let item of detalleArticulos" >
+                                            <td>{{item.descripcion}}</td>
+                                            <td class="text-center">{{item.precio}}</td>
+                                            <td class="text-center">{{item.cantidad}}</td>
+                                            <td class="text-right">{{item.total}}</td>
+                                        </tr>
+                                        <!-- <tr>
+                                            <td>BS-400</td>
+                                            <td class="text-center">$20.00</td>
+                                            <td class="text-center">3</td>
+                                            <td class="text-right">$60.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td>BS-1000</td>
+                                            <td class="text-center">$600.00</td>
+                                            <td class="text-center">1</td>
+                                            <td class="text-right">$600.00</td>
+                                            <td>{{simbolo}}{{descuentos | number}}</td>
+                                            <td>{{simbolo}}{{sumas | number}}</td>
+                                            <td>{{simbolo}}{{iva | number}}</td>
+                                            <td>{{simbolo}}{{total | number}}</td>
+                                        </tr> -->
+                                        <tr>
+                                            <td class="thick-line"></td>
+                                            <td class="thick-line"></td>
+                                            <td class="thick-line text-center"><strong>Subtotal</strong></td>
+                                            <td class="thick-line text-right">{{simbolo}}{{sumas | number}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="no-line"></td>
+                                            <td class="no-line"></td>
+                                            <td class="no-line text-center"><strong>Descuento</strong></td>
+                                            <td class="no-line text-right">{{simbolo}}{{descuentos | number}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="no-line"></td>
+                                            <td class="no-line"></td>
+                                            <td class="no-line text-center"><strong>I.V.A</strong></td>
+                                            <td class="no-line text-right">{{simbolo}}{{iva | number}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="no-line"></td>
+                                            <td class="no-line"></td>
+                                            <td class="no-line text-center"><strong>Total</strong></td>
+                                            <td class="no-line text-right">{{simbolo}}{{total | number}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-helper-clearfix">
+                <button type="button" pButton icon="fa fa-check" (click)="imprimir()" label="Imprimir"></button>
+            </div>
+        </p-footer>
+    </p-dialog>
+</div>
