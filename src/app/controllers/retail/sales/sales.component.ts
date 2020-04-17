@@ -45,6 +45,7 @@ export class SalesComponent implements OnInit {
 
   public tipoDescuentoSelected: any;
   public montoDescuento: any;
+  displayModal: boolean;
 
   constructor(private catalogServices: CatalogService,
     private personServices: PersonService,
@@ -322,5 +323,9 @@ export class SalesComponent implements OnInit {
       const tmpDiscount = (this.car.precio * this.montoDescuento);
       this.car.descuento = tmpDiscount;
     }
+  }
+
+  showModalDialog() {
+    this.displayModal = true;
   }
 }

@@ -245,6 +245,30 @@
                                     </div>
                                 </p-footer>
                             </p-dialog>
+
+                            <h3>Modal</h3>
+                            <button type="button" (click)="showModalDialog()" pButton icon="pi pi-external-link" label="Show"></button>
+                            <p-dialog header="Godfather I" [(visible)]="displayModal" [modal]="true" [style]="{width: '50vw'}" [baseZIndex]="10000"
+                                [draggable]="false" [resizable]="false">
+                                    <div class="row">
+                                      <div class="col">
+                                        <mat-form-field>
+                                          <mat-select placeholder="Bodega Origen:" [(ngModel)]="bodegaSelected" required
+                                              style="width: 100;" name="servicesbatch" id="servicesbatch"
+                                              (selectionChange)="ngChangeBodega($event.value)">
+                                              <mat-option *ngFor="let item of bodegaList" value="{{item.pkBodega}}">
+                                                  {{item.descripcion}}
+                                              </mat-option>
+                                          </mat-select>
+                                      </mat-form-field>
+                                      </div>
+                                    </div>
+                                    <p-footer>
+                                        <button type="button" pButton icon="pi pi-check" (click)="displayModal=false" label="Yes"></button>
+                                        <button type="button" pButton icon="pi pi-times" (click)="displayModal=false" label="No" class="ui-button-secondary"></button>
+                                    </p-footer>
+                            </p-dialog>
+
                         </div>
                     </div>
                 </div>
