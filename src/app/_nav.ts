@@ -27,6 +27,18 @@ export const navItems: INavData[] = [
       }
     ]
   },
+  {
+    name: 'Inventario',
+    url: '/inventario',
+    icon: 'icon-layers',
+    children: [
+      {
+        name: 'Nuevo',
+        url: '/inventario/nuevo',
+        icon: 'icon-plus'
+      }
+    ]
+  }
   // {
   //   title: true,
   //   name: 'Theme'

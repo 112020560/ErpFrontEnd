@@ -53,6 +53,7 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
 import { ChartsModule } from 'ng2-charts';
 import { MessageService } from 'primeng/api';
 import { AuthInterceptor } from './interceptor/auth-interceptor';
+// import { AddComponent } from './views/retail/inventory/product/add/add.component';
 // import { ListComponent } from './views/retail/invoice/list/list.component';
 
 export function tokenGetter() {
@@ -89,7 +90,9 @@ export function tokenGetter() {
     P404Component,
     P500Component,
     LoginComponent,
-    RegisterComponent,
+    RegisterComponent
+    // ,
+    // AddComponent,
     // ListComponent
   ],
   providers: [{
