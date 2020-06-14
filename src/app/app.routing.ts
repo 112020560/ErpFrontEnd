@@ -72,6 +72,11 @@ export const routes: Routes = [
         canActivate: [AuthGuard]
       },
       {
+        path: 'inventario',
+        loadChildren: () => import('./views/retail/inventory/inventory.module').then(m => m.InventoryModule),
+        canActivate: [AuthGuard]
+      },
+      {
         path: 'charts',
         loadChildren: () => import('./views/chartjs/chartjs.module').then(m => m.ChartJSModule)
       },
